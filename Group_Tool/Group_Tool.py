@@ -40,7 +40,7 @@ def create_window():
     if mc.window('new_window', exists=True):
         mc.deleteUI('new_window', window=True)
 
-    mc.window('new_window', title='Group Tool', widthHeight=(345, 280))
+    mc.window('new_window', title='Group Tool', widthHeight=(345, 300))
     mc.columnLayout(adjustableColumn=True)
     mc.textField("main_name", placeholderText='Enter main group name')
     mc.textField('name_input', placeholderText='Enter object names')
