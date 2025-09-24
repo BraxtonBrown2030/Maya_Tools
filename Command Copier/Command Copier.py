@@ -2,6 +2,7 @@ import maya.api.OpenMaya as om
 import maya.cmds as cmds
 import os
 import fnmatch as fm
+import maya.mel as mel
 
 # Set log file path
 log_file = "C:/Command_files/maya_command_log.txt"
@@ -58,14 +59,14 @@ def run_code():
                     mel.eval(cmd)
 
             except Exception as e:
-                print(f"⚠ Error executing {lang} command:\n{cmd}\n{e}")
+                print(f"Error executing {lang} command:\n{cmd}\n{e}")
 
         # In case leftover Python never executed
         if buffer:
             try:
                 exec("\n".join(buffer), globals())
             except Exception as e:
-                print("⚠ Error in leftover Python block:", e)
+                print("Error in leftover Python block:", e)
 
     finally:
         executing_commands = False  # Reset flag after execution
