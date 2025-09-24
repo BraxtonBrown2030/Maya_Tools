@@ -154,8 +154,11 @@ def file_path():
     # Step 5: Update UI textField if it exists
     if log_location_field and cmds.control(log_location_field, exists=True):
         cmds.textField(log_location_field, e=True, text=log_file)
+        return log_file
+    return log_file
 
 def change_file_name(*args):
+    global log_file, log_location_field
 
     result = cmds.promptDialog(
         title="Custom Log File",
@@ -171,19 +174,24 @@ def change_file_name(*args):
         return  # user cancelled
 
     filename = cmds.promptDialog(query=True, text=True).strip()
-
-    # Step 3: Auto-append .txt if missing
     if not filename.lower().endswith(".txt"):
         filename += ".txt"
 
+    folder = os.path.dirname(log_file)
+    log_file = os.path.join(folder, filename)
+    print(f"Log file renamed to: {log_file}")
+
+    if log_location_field and cmds.control(log_location_field, exists=True):
+        cmds.textField(log_location_field, e=True, text=log_file)
+
 
 def command_logger_ui():
-    global log_text_field
+    global log_text_field, log_location_field
 
     if cmds.window("cmdLoggerWin", exists=True):
         cmds.deleteUI("cmdLoggerWin")
 
-    window = cmds.window("cmdLoggerWin", title="Maya Command Logger", widthHeight=(400, 360))
+    window = cmds.window("cmdLoggerWin", title="Maya Command Logger", widthHeight=(400, 400))
     cmds.columnLayout(adjustableColumn=True, rowSpacing=10)
 
     cmds.text(label="Maya Command Logger (MEL & Python)", align="center", height=20)
@@ -194,7 +202,7 @@ def command_logger_ui():
     cmds.button(label="Run Logged Code", command=lambda *args: run_code(), bgc=(0.8, 0.8, 0.4))
     cmds.setParent("..")
 
-    cmds.text(label="Log location:", align="left")
+    log_location_field = cmds.textField(text=log_file, editable=False)
     log_text_field = cmds.scrollField(editable=False, wordWrap=True, text="Command log will appear here...\n", height=200)
 
     cmds.button(label="Select Log File", command=lambda *args: file_path(), bgc=(0.6, 0.6, 0.6)) # added 9/24/2025
