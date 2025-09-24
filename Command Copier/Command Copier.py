@@ -3,6 +3,7 @@ import maya.cmds as cmds
 import os
 import fnmatch as fm
 import maya.mel as mel
+import re
 
 # Set log file path
 log_file = "C:/Command_files/maya_command_log.txt"
@@ -83,16 +84,17 @@ def clear_log_file():
 
 def command_callback(message, *args):
     global executing_commands
-    if executing_commands:  # Skip logging if commands are being executed
+    if executing_commands:
         return
 
     cmd = message.strip()
-    filter_writing(cmd)
-    if not cmd:
+
+    if not (cmd.endswith(";") and "-" in cmd):
         return
+
     lang = detect_language(cmd)
     log_entry = f"{cmd}"
-    with open(log_file, "a") as f:
+    with open(log_file, "a", encoding="utf-8") as f:
         f.write(log_entry + "\n")
 
     if log_text_field:
