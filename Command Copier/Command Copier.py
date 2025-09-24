@@ -3,7 +3,6 @@ import maya.cmds as cmds
 import os
 import fnmatch as fm
 import maya.mel as mel
-import re
 
 # Set log file path
 log_file = "C:/Command_files/maya_command_log.txt"
@@ -12,6 +11,7 @@ os.makedirs(os.path.dirname(log_file), exist_ok=True)
 # Globals
 callback_id = None
 log_text_field = None
+log_location_field = None
 executing_commands = False  # Global flag to prevent recursion
 
 def filter_writing(code):
@@ -117,6 +117,44 @@ def stop_logging(*args):
         callback_id = None
     print("Command logging stopped.")
 
+def file_path():
+    global log_file, log_location_field
+
+    # Step 1: Pick folder
+    selected_folder = cmds.fileDialog2(fileMode=3, caption="Select Log Folder")
+    if not selected_folder:
+        return  # user cancelled
+
+    folder = selected_folder[0]
+
+    # Step 2: Prompt for file name with a default suggestion
+    result = cmds.promptDialog(
+        title="Custom Log File",
+        message="Enter log file name:",
+        button=["OK", "Cancel"],
+        defaultButton="OK",
+        cancelButton="Cancel",
+        dismissString="Cancel",
+        text="maya_command_log.txt"  # <-- Default suggestion
+    )
+
+    if result != "OK":
+        return  # user cancelled
+
+    filename = cmds.promptDialog(query=True, text=True).strip()
+
+    # Step 3: Auto-append .txt if missing
+    if not filename.lower().endswith(".txt"):
+        filename += ".txt"
+
+    # Step 4: Build path
+    log_file = os.path.join(folder, filename)
+    print(f"Log file set to: {log_file}")
+
+    # Step 5: Update UI textField if it exists
+    if log_location_field and cmds.control(log_location_field, exists=True):
+        cmds.textField(log_location_field, e=True, text=log_file)
+
 
 def command_logger_ui():
     global log_text_field
@@ -135,8 +173,10 @@ def command_logger_ui():
     cmds.button(label="Run Logged Code", command=lambda *args: run_code(), bgc=(0.8, 0.8, 0.4))
     cmds.setParent("..")
 
+    cmds.text(label="Log location:", align="left")
     log_text_field = cmds.scrollField(editable=False, wordWrap=True, text="Command log will appear here...\n", height=200)
 
+    log_location = cmds.button(label="Select Log File", command=lambda *args: file_path(), bgc=(0.6, 0.6, 0.6)) # added 9/24/2025
     cmds.button(label="Close", command=lambda *args: cmds.deleteUI(window))
 
     cmds.showWindow(window)
