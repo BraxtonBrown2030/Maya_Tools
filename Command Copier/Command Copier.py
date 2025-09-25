@@ -191,7 +191,7 @@ def command_logger_ui():
     if cmds.window("cmdLoggerWin", exists=True):
         cmds.deleteUI("cmdLoggerWin")
 
-    window = cmds.window("cmdLoggerWin", title="Maya Command Logger", widthHeight=(400, 400))
+    window = cmds.window("cmdLoggerWin", title="Maya Command Logger", widthHeight=(400, 440))
     cmds.columnLayout(adjustableColumn=True, rowSpacing=10)
 
     cmds.text(label="Maya Command Logger (MEL & Python)", align="center", height=20)
@@ -205,8 +205,8 @@ def command_logger_ui():
     log_location_field = cmds.textField(text=log_file, editable=False)
     log_text_field = cmds.scrollField(editable=False, wordWrap=True, text="Command log will appear here...\n", height=200)
 
-    cmds.button(label="Select Log File", command=lambda *args: file_path(), bgc=(0.6, 0.6, 0.6)) # added 9/24/2025
-    cmds.button(label="Change Log File Name", command=lambda *args: change_file_name(), bgc=(0.6, 0.6, 0.6)) # added 9/24/2025
+    cmds.button(label="Select Log File", command=lambda *args: file_path(), bgc=(0.6, 0.6, 0.6))
+    cmds.button(label="Change Log File Name", command=lambda *args: change_file_name(), bgc=(0.6, 0.6, 0.6))
     cmds.button(label="Close", command=lambda *args: cmds.deleteUI(window))
 
     cmds.showWindow(window)
