@@ -1,7 +1,6 @@
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 import os
-import fnmatch as fm
 import maya.mel as mel
 
 # Set log file path
@@ -13,21 +12,6 @@ callback_id = None
 log_text_field = None
 log_location_field = None
 executing_commands = False  # Global flag to prevent recursion
-
-def filter_writing(code):
-    # Define patterns to match
-    patterns = ["*-*", "*;*"]
-    keywords = ["import", "cmds", "eval"]
-
-    # Check if the code matches all patterns
-    if all(fm.fnmatch(code, pattern) for pattern in patterns):
-        # Additional condition: Check if specific keywords are present
-        return code
-    elif all(keyword in code for keyword in keywords):
-        return code  # Return the code if all conditions are met
-
-    # If no conditions are met, return None
-    return None
 
 def run_code():
     global executing_commands
@@ -74,13 +58,19 @@ def run_code():
 
 # Function to guess language
 def detect_language(cmd):
+    # check for Python-specific syntax and if not found, assume MEL
     if "(" in cmd or "import " in cmd or "=" in cmd:
         return "Python"
     return "MEL"
 
 def clear_log_file():
+    # clear log file contents
     with open(log_file, "w", encoding="utf-8") as f:
         pass
+    # clear UI log so it's obvious
+    if log_text_field and cmds.control(log_text_field, exists=True):
+        cmds.scrollField(log_text_field, e=True, text="Command log will appear here...\n")
+
 
 def command_callback(message, *args):
     global executing_commands
@@ -103,12 +93,15 @@ def command_callback(message, *args):
         cmds.scrollField(log_text_field, e=True, text=old_text + ui_entry)
 
 def start_logging(*args):
-    global callback_id
+    global callback_id, log_text_field
     if callback_id is None:
         with open(log_file, "w", encoding="utf-8") as f:
             f.write("\n")
         callback_id = om.MCommandMessage.addCommandOutputCallback(command_callback)
 
+    if log_text_field and cmds.control(log_text_field, exists=True):
+        cmds.scrollField(log_text_field, e=True, text="Command log will appear here...\n")
+        
 # Stop logging
 def stop_logging(*args):
     global callback_id
