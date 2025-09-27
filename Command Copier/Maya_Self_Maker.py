@@ -12,8 +12,26 @@ if not cmds.shelfLayout("Maya_Tools", exists=True):
 cmds.shelfButton( # <-- creates a shelf button
     parent="Maya_Tools", # <-- change to your shelf name
     annotation="Command Logger", # < -- name that appears when you hover over the button
-    image1="commandButton.png",  # <-- you can swap this with any .png icon in Maya's icons folder
+    image1="text.png",  # <-- you can swap this with any .png icon in Maya's icons folder
     label="Logger", # < -- name that appears on the button
     sourceType="python", # <-- specify that this is a python command
     command='import Command_Copier; Command_Copier.command_logger_ui()' # <-- command section of the button make sure to import the script of not it will throw an error
 )
+
+# Testing function to create shelf buttons dynamically
+def create_self_button(edit_name: str, shelf_name: str, shelf_icon: str, command: str, parent_shelf: str, code_type: str, import_name: str):
+    import maya.cmds as cmds
+    
+    import import_name  # Ensure the script is imported
+
+    if not cmds.shelfLayout(parent_shelf, exists=True):
+        cmds.shelfLayout(parent_shelf, parent="ShelfLayout")
+    
+    cmds.shelfButton( # <-- creates a shelf button
+        parent = parent_shelf, # <-- change to your shelf name
+        annotation = shelf_name, # < -- name that appears when you hover over the button
+        image1 = shelf_icon,  # <-- you can swap this with any .png icon in Maya's icons folder
+        label = edit_name, # < -- name that appears on the button
+        sourceType = code_type, # <-- specify that this is a python command
+        command = command # <-- command section of the button make sure to import the script of not it will throw an error
+    )
