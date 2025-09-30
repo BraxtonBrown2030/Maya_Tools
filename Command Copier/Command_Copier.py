@@ -111,7 +111,7 @@ def stop_logging(*args):
     print("Command logging stopped.")
 
 def file_path():
-    global log_file, log_location_field
+    global log_file, log_location_field, log_text_field
 
     # Step 1: Pick folder
     selected_folder = cmds.fileDialog2(fileMode=3, caption="Select Log Folder")
@@ -148,6 +148,16 @@ def file_path():
     if log_location_field and cmds.control(log_location_field, exists=True):
         cmds.textField(log_location_field, e=True, text=log_file)
         return log_file
+
+    # Step 6: Show file contents in scrollField
+    if log_text_field and cmds.control(log_text_field, exists=True):
+        if os.path.exists(log_file):
+            with open(log_file, "r", encoding="utf-8") as f:
+                contents = f.read()
+        else:
+            contents = "Command log will appear here...\n"
+        cmds.scrollField(log_text_field, e=True, text=contents)
+
     return log_file
 
 def change_file_name(*args):
