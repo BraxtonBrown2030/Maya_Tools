@@ -11,9 +11,9 @@ serverAddressPort = ("127.0.0.1", 5052)
 # Create the pose landmarker
 base_options = python.BaseOptions(model_asset_path="pose_landmarker_full.task")
 options = vision.PoseLandmarkerOptions(
-    base_options=base_options,
-    running_mode=vision.RunningMode.VIDEO,
-    num_poses=4  # up to 4 people
+    base_options = base_options,
+    running_mode = vision.RunningMode.VIDEO,
+    num_poses = 4  # up to 4 people
 )
 pose_landmarker = vision.PoseLandmarker.create_from_options(options)
 
